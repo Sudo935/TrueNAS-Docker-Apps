@@ -11,7 +11,9 @@ Repository to store template Docker Compose files that can be deployed on TrueNA
 - [Top](./README.md) <-- You are here
 - [Apps](./Apps/README.md)
 
-
+## WIP
+> [!WARNING]
+> This repo is a Work In Progress as such things will change frequently! While this may be a good reference for what you're doing it's advised you check best practices for your environment before publishing!
 
 
 ## References
