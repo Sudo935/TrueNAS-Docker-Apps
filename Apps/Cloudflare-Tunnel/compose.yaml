@@ -1,0 +1,14 @@
+services:
+  cloudflared:
+    container_name: cloudflared-tunnel     # Name the container so it isn't randomly generated
+    image: cloudflare/cloudflared     # This is the cloudflare tunnel image
+    restart: unless-stopped
+    command: tunnel run     # Command needed to actually start the tunnel once the container is running.
+    environment:
+      TUNNEL_TOKEN: <Cloudflare Tunnel Token>     # Used to establish a tunnel link with Cloudflare's Zero Trust
+    networks:
+      - traefik-proxy     # Needs to be on the same network as the Traefik Reverse Proxy so apps can be accessed by DNS name.
+
+networks:
+  traefik-proxy:
+    external: true     # Since the network has already been created by Traefik the network is external to this app.
