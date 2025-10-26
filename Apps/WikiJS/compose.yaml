@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: wiki
+      POSTGRES_PASSWORD: <Postgres Password>
+      POSTGRES_USER: wikijs
+    logging:
+      driver: none
+    restart: unless-stopped
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+    - wikijs
+
+  wiki:
+    image: ghcr.io/requarks/wiki:2
+    depends_on:
+      - db
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: wikijs
+      DB_PASS: <Postgres Password>
+      DB_NAME: wiki
+    restart: unless-stopped
+    networks:
+    - traefik-proxy
+    - wikijs
+    # Comment if using labels
+    ports:
+      - "80:3000"
+    # Uncomment to enable Traefik Integration
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.wikido.loadbalancer.server.port=3000
+      - traefik.http.services.wikido.loadbalancer.server.scheme=http
+      - traefik.http.routers.wikido.entrypoints=websecure
+      - traefik.http.routers.wikido.rule=Host(`wikido.example.com`)
+      - traefik.http.routers.wikido.tls=true
+      - traefik.http.routers.wikido.tls.certresolver=cloudflare
+
+volumes:
+  db-data:
+
+networks:
+  traefik-proxy:
+    external: true     # Mark the network as external so a copy isn't created
+  wikijs:     # Create a new network for backend communication between Postgres and the WikiJS app
+    external: false
+    name: wikijs-backend
